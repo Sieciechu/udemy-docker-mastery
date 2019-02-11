@@ -3,8 +3,7 @@ version: '3.5'  # if no version is specificed then v1 is assumed. Recommend v2 m
 services:  # containers. same as docker run
 
   drupal: # a friendly name. this is also DNS name inside network
-    image: custom-drupal
-    build: .
+    image: drupal:8.2
     volumes:
       - /var/www/html/modules
       - /var/www/html/profiles
@@ -21,7 +20,7 @@ services:  # containers. same as docker run
   db:
     image: postgres
     environment: 
-      - POSTGRES_PASSWORD=test12345
+      - POSTGRES_PASSWORD_FILE=/run/secrets/pg_password
       - POSTGRES_USER=myuser
       - POSTGRES_DB=mydb
     restart: always
@@ -29,6 +28,8 @@ services:  # containers. same as docker run
       - drupal-data:/var/lib/postgresql/data
     networks: 
       - testnet
+    secrets:
+      - pg_password
 
 
 networks:
@@ -36,3 +37,6 @@ networks:
     name: testnet
 volumes:
   drupal-data:
+secrets:
+  pg_password:
+    external: true
